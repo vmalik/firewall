@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 using firewall.Utils;
 
 namespace firewall.Utils
@@ -10,6 +11,7 @@ namespace firewall.Utils
         private string myRuleFilePath;
         private string myHostFilesPath;
         private RuleEngine myRuleEngine;
+        private Dictionary<string, ManualResetEvent> myResetEvents = new Dictionary<string, ManualResetEvent>();
 
         public Executor(string ruleFilePath, string hostFilePath)
         {
@@ -30,11 +32,18 @@ namespace firewall.Utils
         {
             try
             {
+                List<ManualResetEvent> eventsToWait = new List<ManualResetEvent>();
                 foreach (string file in Directory.EnumerateFiles(myHostFilesPath, "*", SearchOption.TopDirectoryOnly))
                 {
-                    (new Thread(() => ProcessFile(file))).Start();
+                    ThreadPool.SetMaxThreads(5, 5);
+                    ManualResetEvent rEvent = new ManualResetEvent(false);
+                    myResetEvents.Add(file, rEvent);
+                    eventsToWait.Add(rEvent);
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(ProcessFile), file);
+                    //(new Thread(() => ProcessFile(file))).Start();
                     //ProcessFile(file);
                 }
+                WaitHandle.WaitAll(eventsToWait.ToArray());
             }
             catch (UnauthorizedAccessException Ex)
             {
@@ -65,6 +74,12 @@ namespace firewall.Utils
                         Console.WriteLine(Path.GetFileName(file) + ": " + packet.UserName + " access to " + packet.IPAddressAsString + " was denied");
                     }
                 }
+            }
+            if (myResetEvents.ContainsKey(file))
+            {
+                ManualResetEvent rEvent;
+                myResetEvents.TryGetValue(file, out rEvent);
+                rEvent.Set();
             }
         }
     }

@@ -13,7 +13,8 @@ namespace firewalltest
         private static readonly string command = @"F:\temp\firewall\firewall\firewall\firewalltest\Collateral\rules.txt F:\temp\firewall\firewall\firewall\firewalltest\Collateral\host";
         static void Main(string[] args)
         {
-            //RunUnitTests();
+            RunUnitTests();
+            
             string retMessage = String.Empty;
             retMessage = RunFireWallTest();
             Console.WriteLine(retMessage);
@@ -27,6 +28,7 @@ namespace firewalltest
             {
                 Console.WriteLine("Failed");
             }
+            
         }
 
         private static bool IsNotNullOrEmpty(String s)

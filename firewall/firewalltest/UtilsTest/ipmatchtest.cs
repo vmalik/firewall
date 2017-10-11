@@ -25,6 +25,10 @@ namespace firewalltest.UtilsTest
             mask = 24;
             Debug.Assert(IPMatch.IsIPMatching(ip1, mask, ip2));
 
+            ip2 = IPParser.ParseIPAddress("166.66.66.54");
+            mask = 0;
+            Debug.Assert(IPMatch.IsIPMatching(ip1, mask, ip2));
+            
             return true;
         }
     }
