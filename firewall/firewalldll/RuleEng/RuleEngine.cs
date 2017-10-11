@@ -34,6 +34,7 @@ namespace firewall.Utils
                     myRules.Add(rule);
                 }
             }
+            
             /*
             Console.WriteLine("***RULES***");
             foreach (Rule rule in myRules)

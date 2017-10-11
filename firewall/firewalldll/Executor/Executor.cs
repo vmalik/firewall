@@ -32,8 +32,8 @@ namespace firewall.Utils
             {
                 foreach (string file in Directory.EnumerateFiles(myHostFilesPath, "*", SearchOption.TopDirectoryOnly))
                 {
-                    //(new Thread(() => ProcessFile(file))).Start();
-                    ProcessFile(file);
+                    (new Thread(() => ProcessFile(file))).Start();
+                    //ProcessFile(file);
                 }
             }
             catch (UnauthorizedAccessException Ex)

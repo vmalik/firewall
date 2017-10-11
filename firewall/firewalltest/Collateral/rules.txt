@@ -1,0 +1,11 @@
+super@contoso.com|0.0.0.0/0|allow
+mike@contoso.com|1.2.3.5|deny
+mike@contoso.com|1.2.3.4/32|deny
+mike@contoso.com|1.2.3.0/24|allow
+*|1.2.3.4|deny
+vikas@contoso.com|1.2.3.0/24|allow
+vikas@contoso.com|5.6.0.0/16|allow
+*|5.6.0.0/16|deny
+vikas@contoso.com|5.0.0.0/8|deny
+person1@contoso.com|1.2.0.0/16|deny
+

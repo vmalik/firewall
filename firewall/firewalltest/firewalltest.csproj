@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Collateral\host\host3" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UtilsTest\ipmatchtest.cs" />
@@ -50,6 +51,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Collateral\host\host1" />
+    <None Include="Collateral\host\host2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\firewalldll\firewalldll.csproj">
@@ -60,6 +63,10 @@
   <ItemGroup>
     <Folder Include="ExecutorTest\" />
     <Folder Include="RuleEngTest\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Baseline\testoutput.txt" />
+    <Content Include="Collateral\rules.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
