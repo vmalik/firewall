@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "firewall", "firewall\firewall.csproj", "{B46BD967-3A43-47C9-8915-084ABF4FB6FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "firewalltest", "firewalltest\firewalltest.csproj", "{CEE6D96E-2FCB-4576-BB7B-12294F16180E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "firewalldll", "firewalldll\firewalldll.csproj", "{347A0DED-7C27-4851-B852-FB96AE73216E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B46BD967-3A43-47C9-8915-084ABF4FB6FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B46BD967-3A43-47C9-8915-084ABF4FB6FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B46BD967-3A43-47C9-8915-084ABF4FB6FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B46BD967-3A43-47C9-8915-084ABF4FB6FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEE6D96E-2FCB-4576-BB7B-12294F16180E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEE6D96E-2FCB-4576-BB7B-12294F16180E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEE6D96E-2FCB-4576-BB7B-12294F16180E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEE6D96E-2FCB-4576-BB7B-12294F16180E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{347A0DED-7C27-4851-B852-FB96AE73216E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{347A0DED-7C27-4851-B852-FB96AE73216E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{347A0DED-7C27-4851-B852-FB96AE73216E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{347A0DED-7C27-4851-B852-FB96AE73216E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
