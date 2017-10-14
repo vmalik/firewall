@@ -1,19 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace firewall.RuleEng
 {
-    public class RuleParser
+    public class IPRule : BaseRule
     {
-        private static readonly string ALLOW = "allow";
-        private static readonly string DENY = "deny";
+        private UInt16[] myIPAddress = new UInt16[4];
+        private UInt16 myMask = 0;
+        private uint myMaskedIPAddress = 0;
+
         private static readonly UInt16 NOMASK = 32;
         private static readonly uint RULE_FIELDS_COUNT = 3;
 
-        public static bool TryParse(string line, out Rule rule)
+        public IPRule(string username, UInt16[] ipAddress, UInt16 mask, bool isAllowed) : base(username, isAllowed)
+        {
+            if (ipAddress.Length != 4)
+            {
+                throw new ArgumentException("ipAddress should have four octets");
+            }
+            myIPAddress = ipAddress;
+            myMask = mask;
+            myMaskedIPAddress = IPUtils.ApplyMask(myMask, myIPAddress);
+        }
+        public UInt16[] IPAddress
+        {
+            get
+            {
+                return myIPAddress;
+            }
+        }
+
+        public uint MaskedIPAddress
+        {
+            get
+            {
+                return myMaskedIPAddress;
+            }
+        }
+
+        public UInt16 Mask
+        {
+            get
+            {
+                return myMask;
+            }
+        }
+
+
+        public static bool CreateIPRule(string line, out IPRule rule)
         {
             rule = null;
             //System.Console.WriteLine(line);
@@ -42,33 +79,14 @@ namespace firewall.RuleEng
             }
 
             bool isAllowed = false;
-            if (!TryParseIsAllowed(fields[2], out isAllowed))
+            if (!BaseRule.TryParseIsAllowed(fields[2], out isAllowed))
             {
                 return false;
             }
 
             string username = fields[0];
-            rule = new Rule(username, ipAddress, mask, isAllowed);
-
+            rule = new IPRule(username, ipAddress, mask, isAllowed);
             return true;
-        }
-
-        private static bool TryParseIsAllowed(string field, out bool isAllowed)
-        {
-            isAllowed = false;
-            if (String.Equals(field, ALLOW, StringComparison.OrdinalIgnoreCase))
-            {
-                isAllowed = true;
-                return true;
-            }
-            else if (String.Equals(field, DENY, StringComparison.OrdinalIgnoreCase))
-            {
-                isAllowed = false;
-                return true;
-            }
-            else {
-                return false;
-            }
         }
     }
 }

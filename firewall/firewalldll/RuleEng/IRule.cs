@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace firewalldll.Utils
+namespace firewall.RuleEng
 {
-    class ReverseDNSlookupHelper
+    public interface IRule
     {
+        bool IsAllowed();
     }
 }

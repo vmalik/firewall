@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using firewall.Utils;
 
 
 namespace firewall.RuleEng
@@ -10,11 +11,13 @@ namespace firewall.RuleEng
     public class RuleEngine
     {
         private string myRuleFilePath;
-        private Dictionary<uint, Rule> myRules = null;
+        private Dictionary<uint, IRule> myRules = null;
         private Dictionary<string, HashSet<uint>> myUserToRuleMap = new Dictionary<string, HashSet<uint>>();
             
         // Dictionary of mask of Dictionary of masked IPs e.g. <24, <0x01000000, [2,5,6]>>
         private Dictionary<UInt16, Dictionary <uint,  HashSet<uint>>> myMaskedIPToRuleMap = new Dictionary<UInt16, Dictionary<uint, HashSet<uint>>>();
+
+        private HashSet<uint> myHostnameRuleSet = new HashSet<uint>();
 
         public RuleEngine(string ruleFilePath)
         {
@@ -28,17 +31,18 @@ namespace firewall.RuleEng
 
         private void Initialize()
         {
-            myRules = new Dictionary<uint, Rule>();
+            myRules = new Dictionary<uint, IRule>();
 
             uint ruleId = 0;
             foreach (string line in File.ReadLines(myRuleFilePath))
             {
-                Rule rule = null;
-                if (RuleParser.TryParse(line, out rule))
+                IRule rule = RuleFactory.CreateRule(line);
+                if (rule != null)
                 {
                     myRules.Add(ruleId, rule);
                     BuilUserToRuleMap(ruleId, rule);
                     BuildMaskedIPtoRuleMap(ruleId, rule);
+                    BuildHostnameRuleSet(ruleId, rule);
 
                     ruleId++;
                 }
@@ -54,82 +58,129 @@ namespace firewall.RuleEng
             */
         }
 
-        private void BuildMaskedIPtoRuleMap(uint ruleId, Rule rule)
+        private void BuildHostnameRuleSet(uint ruleId, IRule rule)
         {
-            if (!myMaskedIPToRuleMap.ContainsKey(rule.Mask))
+            HostRule hostRule = rule as HostRule;
+            if (hostRule != null)
             {
-                myMaskedIPToRuleMap.Add(rule.Mask, new Dictionary<uint, HashSet<uint>>());
+                myHostnameRuleSet.Add(ruleId);
             }
+        }
 
-            Dictionary<uint, HashSet<uint>> ipRuleMap = null;
-
-            if (myMaskedIPToRuleMap.TryGetValue(rule.Mask, out ipRuleMap))
+        private void BuildMaskedIPtoRuleMap(uint ruleId, IRule rule)
+        {
+            IPRule ipRule = rule as IPRule;
+            if (ipRule != null)
             {
-                if (ipRuleMap.ContainsKey(rule.MaskedIPAddress))
+                if (!myMaskedIPToRuleMap.ContainsKey(ipRule.Mask))
+                {
+                    myMaskedIPToRuleMap.Add(ipRule.Mask, new Dictionary<uint, HashSet<uint>>());
+                }
+
+                Dictionary<uint, HashSet<uint>> ipRuleMap = null;
+
+                if (myMaskedIPToRuleMap.TryGetValue(ipRule.Mask, out ipRuleMap))
+                {
+                    if (ipRuleMap.ContainsKey(ipRule.MaskedIPAddress))
+                    {
+                        HashSet<uint> ruleSet = null;
+                        ipRuleMap.TryGetValue(ipRule.MaskedIPAddress, out ruleSet);
+                        ruleSet.Add(ruleId);
+                    }
+                    else
+                    {
+                        HashSet<uint> ruleSet = new HashSet<uint>();
+                        ruleSet.Add(ruleId);
+                        ipRuleMap.Add(ipRule.MaskedIPAddress, ruleSet);
+                    }
+                }
+            }
+        }
+
+        private void BuilUserToRuleMap(uint ruleId, IRule rule)
+        {
+            BaseRule baserule = rule as BaseRule;
+            if (baserule != null)
+            {
+                if (myUserToRuleMap.ContainsKey(baserule.UserName))
                 {
                     HashSet<uint> ruleSet = null;
-                    ipRuleMap.TryGetValue(rule.MaskedIPAddress, out ruleSet);
+                    myUserToRuleMap.TryGetValue(baserule.UserName, out ruleSet);
                     ruleSet.Add(ruleId);
                 }
                 else
                 {
                     HashSet<uint> ruleSet = new HashSet<uint>();
                     ruleSet.Add(ruleId);
-                    ipRuleMap.Add(rule.MaskedIPAddress, ruleSet);
+                    myUserToRuleMap.Add(baserule.UserName, ruleSet);
                 }
-            }
-        }
-
-        private void BuilUserToRuleMap(uint ruleId, Rule rule)
-        {
-            if (myUserToRuleMap.ContainsKey(rule.UserName))
-            {
-                HashSet<uint> ruleSet = null;
-                myUserToRuleMap.TryGetValue(rule.UserName, out ruleSet);
-                ruleSet.Add(ruleId);
-            }
-            else
-            {
-                HashSet<uint> ruleSet = new HashSet<uint>();
-                ruleSet.Add(ruleId);
-                myUserToRuleMap.Add(rule.UserName, ruleSet);
             }
         }
 
         public bool IsAllowed(Packet packet)
         {
-            //Console.WriteLine("Processing " + packet.UserName + "in thread : " + Thread.CurrentThread.ManagedThreadId);
-            //Rules for matching name
-            HashSet<uint> userRuleSet = FindRulesMatchingUserName(packet);
-            if (userRuleSet.Count == 0)
+            uint ruleId;
+            if (!FindFirstMatchingRule(packet, out ruleId))
             {
                 return true;
             }
-            //Console.WriteLine("FindRulesMatchingUserName count " + userRuleSet.Count);
-            
-            //Rules for same masked ip
-            HashSet<uint> maskedIPRuleSet = FindRulesMatchingIP(packet);
-            if (maskedIPRuleSet == null || maskedIPRuleSet.Count == 0)
-            {
-                return true;
-            }
-            //Console.WriteLine("FindRulesMatchingIP count " + maskedIPRuleSet.Count);
 
-            userRuleSet.IntersectWith(maskedIPRuleSet);
-
-            //Console.WriteLine("IntersectWith FindRulesMatchingUserName FindRulesMatchingIP count " + userRuleSet.Count);
-            if (userRuleSet.Count == 0)
-            {
-                //No rule matched
-                return true;
-            }
-
-            uint ruleID = userRuleSet.Min(); //Only need to use the first mathcing rule
-            Rule firstMatchedRule = null;
-            myRules.TryGetValue(ruleID, out firstMatchedRule);
-            return firstMatchedRule.IsAllowed;
+            IRule firstMatchedRule = null;
+            myRules.TryGetValue(ruleId, out firstMatchedRule);
+            return firstMatchedRule.IsAllowed();
         }
 
+        private bool FindFirstMatchingRule(Packet packet, out uint ruleId)
+        {
+            SortedSet<uint> matchingRuleSet = new SortedSet<uint>();
+            ruleId = uint.MaxValue;
+            //Console.WriteLine("Processing " + packet.UserName + "in thread : " + Thread.CurrentThread.ManagedThreadId);
+            //Rules for matching name
+            matchingRuleSet.UnionWith(FindRulesMatchingUserName(packet));
+            if (matchingRuleSet.Count == 0)
+            {
+                return false;
+            }
+            //Console.WriteLine("FindRulesMatchingUserName count " + userRuleSet.Count);
+
+            //Rules for same masked ip
+            HashSet<uint> maskedIPAllHostRuleSet = FindRulesMatchingIP(packet);
+            //Console.WriteLine("FindRulesMatchingIP count " + maskedIPRuleSet.Count);
+
+            //Add all Rules with hostname
+            maskedIPAllHostRuleSet.UnionWith(myHostnameRuleSet);
+            //Console.WriteLine("FindRulesMatchingIP count " + maskedIPRuleSet.Count);
+
+            matchingRuleSet.IntersectWith(maskedIPAllHostRuleSet);
+            //Console.WriteLine("IntersectWith FindRulesMatchingUserName FindRulesMatchingIP count " + userRuleSet.Count);
+            if (matchingRuleSet.Count == 0)
+            {
+                //No rule matched
+                return false;
+            }
+
+            // ruleId = matchingRuleSet.Min();
+            foreach (uint id in matchingRuleSet)
+            {
+                ruleId = id;
+                if (!myHostnameRuleSet.Contains(id))
+                {
+                    break;
+                }
+                IRule rule;
+                Debug.Assert(myRules.TryGetValue(id, out rule));
+
+                HostRule hostRule = rule as HostRule;
+                Debug.Assert(hostRule != null);
+
+                string packetHost = DNSlookupHelper.lookupCachedHost(packet.IPAddress);
+                if (string.Equals(packetHost, hostRule.HostName))
+                {
+                    break;
+                }
+            }
+            return true;
+        }
         private HashSet<uint> FindRulesMatchingIP(Packet packet)
         {
             HashSet<uint> maskedIPRuleSet = new HashSet<uint>();

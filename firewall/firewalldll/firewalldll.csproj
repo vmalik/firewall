@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,10 +45,14 @@
     <Compile Include="Executor\Packet.cs" />
     <Compile Include="Executor\PacketParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuleEng\Rule.cs" />
+    <Compile Include="RuleEng\BaseRule.cs" />
+    <Compile Include="RuleEng\RuleFactory.cs" />
+    <Compile Include="RuleEng\HostRule.cs" />
+    <Compile Include="RuleEng\IRule.cs" />
+    <Compile Include="RuleEng\IPRule.cs" />
     <Compile Include="RuleEng\RuleEngine.cs" />
-    <Compile Include="RuleEng\RuleParser.cs" />
     <Compile Include="Utils\IPUtils.cs" />
+    <Compile Include="Utils\DNSlookupHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

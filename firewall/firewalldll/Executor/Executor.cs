@@ -15,7 +15,7 @@ namespace firewall.RuleEng
         private Dictionary<string, ManualResetEvent> myResetEvents = new Dictionary<string, ManualResetEvent>();
 
         SemaphoreSlim packetProcessThreadThrottler = new SemaphoreSlim(2,2);
-        SemaphoreSlim fileProcessThreadThrottler = new SemaphoreSlim(5, 5);
+        SemaphoreSlim fileProcessThreadThrottler = new SemaphoreSlim(5,5);
 
         public Executor(string ruleFilePath, string hostFilePath)
         {
@@ -41,7 +41,6 @@ namespace firewall.RuleEng
                 {
                     ProcessFileAsync(file);
                 }
-                //WaitHandle.WaitAll(eventsToWait.ToArray());
             }
             catch (UnauthorizedAccessException Ex)
             {

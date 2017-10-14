@@ -8,4 +8,5 @@ vikas@contoso.com|5.6.0.0/16|allow
 *|5.6.0.0/16|deny
 vikas@contoso.com|5.0.0.0/8|deny
 person1@contoso.com|1.2.0.0/16|deny
-
+vikas@contoso.com|www.msn.com|deny
+vikas@contoso.com|www.microsoft.com|allow
