@@ -160,11 +160,13 @@ namespace firewall.RuleEng
             }
 
             // ruleId = matchingRuleSet.Min();
+            bool matched = false;
             foreach (uint id in matchingRuleSet)
             {
-                ruleId = id;
                 if (!myHostnameRuleSet.Contains(id))
                 {
+                    matched = true;
+                    ruleId = id;
                     break;
                 }
                 IRule rule;
@@ -173,13 +175,15 @@ namespace firewall.RuleEng
                 HostRule hostRule = rule as HostRule;
                 Debug.Assert(hostRule != null);
 
-                string packetHost = DNSlookupHelper.lookupCachedHost(packet.IPAddress);
+                string packetHost =  DNSlookupHelper.lookupCachedHost(packet.IPAddress);
                 if (string.Equals(packetHost, hostRule.HostName))
                 {
+                    matched = true;
+                    ruleId = id;
                     break;
                 }
             }
-            return true;
+            return matched;
         }
         private HashSet<uint> FindRulesMatchingIP(Packet packet)
         {
