@@ -46,7 +46,6 @@
     <None Include="Collateral\host\host3" />
     <Compile Include="TestRunner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UtilsTest\ipmatchtest.cs" />
     <Compile Include="UtilsTest\ipparserTest.cs" />
   </ItemGroup>
   <ItemGroup>

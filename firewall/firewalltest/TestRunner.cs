@@ -75,6 +75,10 @@ namespace firewalltest
             p.StartInfo = startInfo;
             p.Start();
 
+            System.Threading.Thread.Sleep(1000);
+            StreamWriter streamWriter = p.StandardInput;
+            streamWriter.WriteLine("\n");
+
             p.WaitForExit();
             retMessage = p.StandardOutput.ReadToEnd();
             return retMessage;
@@ -83,7 +87,6 @@ namespace firewalltest
         private static void RunUnitTests()
         {
             ipparserTest.run();
-            IPmatchTest.run();
         }
     }
 }

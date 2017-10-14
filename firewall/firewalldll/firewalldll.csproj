@@ -47,8 +47,7 @@
     <Compile Include="RuleEng\Rule.cs" />
     <Compile Include="RuleEng\RuleEngine.cs" />
     <Compile Include="RuleEng\RuleParser.cs" />
-    <Compile Include="Utils\IPMatch.cs" />
-    <Compile Include="Utils\IPParser.cs" />
+    <Compile Include="Utils\IPUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

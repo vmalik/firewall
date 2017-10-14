@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace firewall.Utils
+namespace firewall.RuleEng
 {
     public class PacketParser
     {
@@ -17,7 +17,7 @@ namespace firewall.Utils
             {
                 return false;
             }
-            UInt16[] ipAddress = IPParser.ParseIPAddress(fields[1]);
+            UInt16[] ipAddress = IPUtils.ParseIPAddress(fields[1]);
             if (ipAddress == null)
             {
                 return false;

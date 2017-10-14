@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using firewall.Utils;
+using firewall.RuleEng;
 
 namespace firewall
 {
-    class MyMain
+    public class MyMain
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             if (args.Length != 2)
             {
@@ -22,6 +22,7 @@ namespace firewall
             {
                 Executor exec = new Executor(args[0], args[1]);
                 exec.execute();
+                Console.Read();
             }
             catch (ArgumentException e)
             {

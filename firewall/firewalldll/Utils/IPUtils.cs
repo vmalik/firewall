@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace firewall.Utils
+namespace firewall.RuleEng
 {
-    public class IPParser
+    public class IPUtils
     {
         public static UInt16[] ParseIPAddress(string ipField)
         {
@@ -24,6 +20,16 @@ namespace firewall.Utils
                 }
             }
             return ipAddress;
+        }
+
+        public static uint ApplyMask(UInt16 mask, UInt16[] IPAddress)
+        {
+            if (mask == 0)
+            {
+                return 0;
+            }
+            uint maskbitset = uint.MaxValue << (32 - mask);
+            return (uint)(((IPAddress[0] << 24) + (IPAddress[1] << 16) + (IPAddress[2] << 8) + IPAddress[3]) & maskbitset);
         }
     }
 }

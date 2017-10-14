@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace firewall.Utils
+namespace firewall.RuleEng
 {
     public class Rule
     {
         private string myUsername;
         private UInt16[] myIPAddress = new UInt16[4];
         private UInt16 myMask = 0;
+        private uint myMaskedIPAddress = 0;
         private bool myIsAllowed = false;
 
         public Rule(string username, UInt16[] ipAddress, UInt16 mask, bool isAllowed)
@@ -27,6 +28,7 @@ namespace firewall.Utils
             myIPAddress = ipAddress;
             myMask = mask;
             myIsAllowed = isAllowed;
+            myMaskedIPAddress = IPUtils.ApplyMask(myMask, myIPAddress);
         }
 
         public override string ToString()
@@ -48,6 +50,14 @@ namespace firewall.Utils
             get
             {
                 return myIPAddress;
+            }
+        }
+
+        public uint MaskedIPAddress
+        {
+            get
+            {
+                return myMaskedIPAddress;
             }
         }
 
