@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using firewall.RuleEng;
 
 namespace firewall.RuleEng
 {
@@ -14,8 +13,8 @@ namespace firewall.RuleEng
         private RuleEngine myRuleEngine;
         private Dictionary<string, ManualResetEvent> myResetEvents = new Dictionary<string, ManualResetEvent>();
 
-        SemaphoreSlim packetProcessThreadThrottler = new SemaphoreSlim(2,2);
-        SemaphoreSlim fileProcessThreadThrottler = new SemaphoreSlim(5,5);
+        private SemaphoreSlim packetProcessThreadThrottler = new SemaphoreSlim(2,2);
+        private SemaphoreSlim fileProcessThreadThrottler = new SemaphoreSlim(5,5);
 
         public Executor(string ruleFilePath, string hostFilePath)
         {
@@ -36,7 +35,6 @@ namespace firewall.RuleEng
         {
             try
             {
-                List<ManualResetEvent> eventsToWait = new List<ManualResetEvent>();
                 foreach (string file in Directory.EnumerateFiles(myHostFilesPath, "*", SearchOption.TopDirectoryOnly))
                 {
                     ProcessFileAsync(file);

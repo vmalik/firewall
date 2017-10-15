@@ -8,9 +8,9 @@ namespace firewalltest
 {
     class TestRunner
     {
-        private static readonly string BASELINE = @"F:\temp\firewall\firewall\firewall\firewalltest\Baseline\testoutput.txt";
-        private static readonly string FIREWALLEXE = @"F:\temp\firewall\firewall\firewall\firewall\bin\Debug\firewall.exe";
-        private static readonly string command = @"F:\temp\firewall\firewall\firewall\firewalltest\Collateral\rules.txt F:\temp\firewall\firewall\firewall\firewalltest\Collateral\host";
+        private static readonly string BASELINE = @"..\..\Baseline\testoutput.txt";
+        private static readonly string FIREWALLEXE = @"..\..\..\firewall\bin\Debug\firewall.exe";
+        private static readonly string command = @"..\..\Collateral\rules.txt F:\temp\firewall\firewall\firewall\firewalltest\Collateral\host";
         static void Main(string[] args)
         {
             RunUnitTests();
